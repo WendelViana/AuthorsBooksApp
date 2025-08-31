@@ -2,6 +2,7 @@
 using AuthorsBooksApp.Models;
 using AuthorsBooksApp.Services;
 using AuthorsBooksApp.Services.Interfaces;
+using System;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -23,13 +24,22 @@ namespace AuthorsBooksApp.Controllers
         [HttpPost]
         public async Task<ActionResult> Login(string email, string password)
         {
-            var user = await _authService.GetUserByEmail(email);
-
-            if (user != null && PasswordHelper.IsPasswordValid(password, user.PasswordHash))
+            try
             {
-                Session["User"] = user;
-                return RedirectToAction("Index", "Home");
+                var user = await _authService.GetUserByEmail(email);
+
+                if (user != null && PasswordHelper.IsPasswordValid(password, user.PasswordHash))
+                {
+                    Session["User"] = user;
+                    return RedirectToAction("Index", "Home");
+                }
             }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine($"Error during login process. {ex.Message}");
+                //Add logging here
+            }
+
 
             ViewBag.Error = "Invalid login.";
             return View();
