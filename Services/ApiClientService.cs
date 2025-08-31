@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AuthorsBooksApp.Services
 {
-    public class ApiClientService
+    public class ApiClientService : IApiClientService
     {
         private readonly HttpClient _httpClient;
 

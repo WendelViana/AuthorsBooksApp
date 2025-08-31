@@ -1,6 +1,7 @@
 ﻿using AuthorsBooksApp.Helpers;
 using AuthorsBooksApp.Models;
 using AuthorsBooksApp.Services;
+using AuthorsBooksApp.Services.Interfaces;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -8,7 +9,13 @@ namespace AuthorsBooksApp.Controllers
 {
     public class AuthController : Controller
     {
-        private readonly AuthService _authService = new AuthService();
+        private readonly IAuthService _authService;
+
+        public AuthController(IAuthService authService)
+        {
+            _authService = authService;
+        }
+
 
         [HttpGet]
         public ActionResult Login() => View();

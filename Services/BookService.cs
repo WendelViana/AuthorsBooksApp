@@ -1,17 +1,18 @@
 ﻿using AuthorsBooksApp.Models;
+using AuthorsBooksApp.Services.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace AuthorsBooksApp.Services
 {
 
-    public class BookService
+    public class BookService : IBookService
     {
-        private readonly ApiClientService _apiService;
+        private readonly IApiClientService _apiService;
 
-        public BookService()
+        public BookService(IApiClientService apiClientService)
         {
-            _apiService = new ApiClientService();
+            _apiService = apiClientService;
         }
 
         public async Task<List<Book>> GetAllBooks()
@@ -19,6 +20,10 @@ namespace AuthorsBooksApp.Services
             return await _apiService.GetAsync<List<Book>>("Book/GetAll");
         }
 
+        public async Task<Book> GetBookById(string id)
+        {
+            return await _apiService.GetAsync<Book>($"Book/Get/{id}");
+        }
 
         public async Task<Book> AddBook(Book book)
         {

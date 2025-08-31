@@ -60,6 +60,7 @@
                     <th scope="col">First</th>
                     <th scope="col">Last</th>
                     <th scope="col">Email</th>
+                    <th scope="col">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -72,6 +73,7 @@
                         <td>@author.FirstName</td>
                         <td>@author.LastName</td>
                         <td>@author.Email</td>
+                        <td>@Html.ActionLink("Edit", "Edit", "Authors", new { id = author.Id }, null)</td>
                     </tr>
                 }
             </tbody>

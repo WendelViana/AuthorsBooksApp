@@ -1,5 +1,6 @@
 ﻿using AuthorsBooksApp.Models;
 using AuthorsBooksApp.Services;
+using AuthorsBooksApp.Services.Interfaces;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -7,8 +8,12 @@ namespace AuthorsBooksApp.Controllers
 {
     public class AuthorsController : Controller
     {
-        private readonly AuthorService _authorService = new AuthorService();
+        private readonly IAuthorService _authorService;
 
+        public AuthorsController(IAuthorService authorService)
+        {
+            _authorService = authorService;
+        }
 
         public async Task<ActionResult> Index()
         {
@@ -35,8 +40,23 @@ namespace AuthorsBooksApp.Controllers
             return View(author);
         }
 
+        [HttpGet]
+        public async Task<ActionResult> Edit(string id) 
+        {
+            var author = await _authorService.GetById(id);
+
+            if (author != null)
+            {
+                return View(author);
+            }
+
+            TempData["Error"] = "Author not found.";
+
+            return RedirectToAction("Index");
+        }
+
         [HttpPost]
-        public async Task<ActionResult> Edit(Author author)
+        public async Task<ActionResult> Update(Author author)
         {
 
             if (ModelState.IsValid)

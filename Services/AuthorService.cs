@@ -1,16 +1,17 @@
 ﻿using AuthorsBooksApp.Models;
+using AuthorsBooksApp.Services.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace AuthorsBooksApp.Services
 {
-    public class AuthorService
+    public class AuthorService: IAuthorService
     {
-        private readonly ApiClientService _apiService;
+        private readonly IApiClientService _apiService;
 
-        public AuthorService()
+        public AuthorService(IApiClientService apiClientService)
         {
-            _apiService = new ApiClientService();
+            _apiService = apiClientService;
         }
 
 
@@ -27,6 +28,11 @@ namespace AuthorsBooksApp.Services
         public async Task<Author> UpdateAuthor(Author author)
         {
             return await _apiService.PostAsync<Author>($"Author/Edit", author);
+        }
+
+        public async Task<Author> GetById(string Id)
+        {
+            return await _apiService.GetAsync<Author>($"Author/Get/{Id}");
         }
     }
 }

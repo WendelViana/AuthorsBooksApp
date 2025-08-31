@@ -1,16 +1,17 @@
 ﻿using AuthorsBooksApp.Helpers;
 using AuthorsBooksApp.Models;
+using AuthorsBooksApp.Services.Interfaces;
 using System.Threading.Tasks;
 
 namespace AuthorsBooksApp.Services
 {
-    public class AuthService
+    public class AuthService : IAuthService
     {
-        private readonly ApiClientService _apiService;
+        private readonly IApiClientService _apiService;
 
-        public AuthService()
+        public AuthService(IApiClientService apiClientService)
         {
-            _apiService = new ApiClientService();
+            _apiService = apiClientService;
         }
 
         public async Task<User> GetUserByEmail(string email)
