@@ -59,8 +59,30 @@
 </head>
 
 <body class="text-center">
+
+
+
     @using (Html.BeginForm("Register", "Auth", FormMethod.Post, new { @class = "form-signup", novalidate = "", onsubmit = "return validateForm()" }))
     {
+        if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger">@ViewBag.Error</div>
+        }
+
+        if (TempData["Message"] != null)
+        {
+            <div class="alert alert-info" role="alert">
+                @TempData["Message"]
+            </div>
+        }
+
+        if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger" role="alert">
+                @TempData["Error"]
+            </div>
+        }
+
         <h1 class="h3 mb-3 font-weight-normal">User registration</h1>
 
         <br />

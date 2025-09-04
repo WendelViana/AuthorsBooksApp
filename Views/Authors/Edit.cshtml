@@ -65,6 +65,11 @@
                     </div>
 
                     <div class="mb-3">
+                        <label for="Phone">Phone</label>
+                        @Html.TextBoxFor(m => m.Phone, new { @class = "form-control" })
+                    </div>
+
+                    <div class="mb-3">
                         <label for="Address">Address</label>
                         @Html.TextBoxFor(m => m.Address1, new { @class = "form-control", placeholder = "1234 Main St", required = "required" })
                     </div>
@@ -72,6 +77,11 @@
                     <div class="mb-3">
                         <label for="Address2">Address 2 <span class="text-muted">(Optional)</span></label>
                         @Html.TextBoxFor(m => m.Address2, new { @class = "form-control", placeholder = "Apartment or suite" })
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="City">City </label>
+                        @Html.TextBoxFor(m => m.City, new { @class = "form-control" })
                     </div>
 
                     <div class="row">

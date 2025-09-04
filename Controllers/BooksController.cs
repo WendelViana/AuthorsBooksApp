@@ -1,6 +1,6 @@
 ﻿using AuthorsBooksApp.Models;
-using AuthorsBooksApp.Services;
 using AuthorsBooksApp.Services.Interfaces;
+using System;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -17,8 +17,16 @@ namespace AuthorsBooksApp.Controllers
 
         public async Task<ActionResult> Index()
         {
-            var books = await _bookService.GetAllBooks();
-            return View(books);
+            try
+            {
+                var books = await _bookService.GetAllBooks();
+                return View(books);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Error loading books.";
+                return RedirectToAction("Error", "Home");
+            }
         }
 
         [HttpGet]
@@ -27,14 +35,21 @@ namespace AuthorsBooksApp.Controllers
         [HttpPost]
         public async Task<ActionResult> Create(Book book)
         {
-            ViewBag.Message = "";
-            var bookInserted = await _bookService.AddBook(book);
-            if (bookInserted != null)
+            try
             {
-                ViewBag.Message = "Book added successfully.";
-                return RedirectToAction("Index");
+                var bookInserted = await _bookService.AddBook(book);
+                if (bookInserted != null)
+                {
+                    TempData["Message"] = "Book added successfully.";
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    ViewBag.Error = "Error adding book.";
+                    return View();
+                }
             }
-            else
+            catch (Exception ex)
             {
                 ViewBag.Error = "Error adding book.";
                 return View();
@@ -42,30 +57,45 @@ namespace AuthorsBooksApp.Controllers
         }
 
         [HttpGet]
-        public ActionResult Edit(string id) 
+        public async Task<ActionResult> Edit(string id)
         {
-            var book = _bookService.GetBookById(id);
-            if (book != null)
+            try
             {
-                return View(book);
+                var book = await _bookService.GetBookById(id);
+
+                if (book != null)
+                {
+                    return View(book);
+                }
+
+                TempData["Error"] = "Book not found.";
+                return RedirectToAction("Index");
             }
-
-            return RedirectToAction("Index");
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Error loading book.";
+                return RedirectToAction("Index");
+            }
         }
-
 
         [HttpPost]
         public async Task<ActionResult> Update(Book book)
         {
-            ViewBag.Message = "";
-            var bookUpdated = await _bookService.UpdateBook( book);
-
-            if (bookUpdated != null)
-            { 
-                ViewBag.Message = "Book updated successfully.";
-                return RedirectToAction("Index");
+            try
+            {
+                var bookUpdated = await _bookService.UpdateBook(book);
+                if (bookUpdated != null)
+                {
+                    TempData["Message"] = "Book updated successfully.";
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    ViewBag.Error = "Error updating book.";
+                    return View();
+                }
             }
-            else
+            catch (Exception ex)
             {
                 ViewBag.Error = "Error updating book.";
                 return View();

@@ -1,6 +1,7 @@
 ﻿using AuthorsBooksApp.Models;
 using AuthorsBooksApp.Services;
 using AuthorsBooksApp.Services.Interfaces;
+using System;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -27,17 +28,30 @@ namespace AuthorsBooksApp.Controllers
         [HttpPost]
         public async Task<ActionResult> Create(Author author)
         {
-            if (ModelState.IsValid)
+            try
             {
-                await _authorService.AddAuthor(author);
-                TempData["Message"] = "Author added successfully.";
+                if (ModelState.IsValid)
+                {
+                    var inserted = await _authorService.AddAuthor(author);
 
-                return RedirectToAction("Index");
+                    if (inserted != null)
+                    {
+                        TempData["Message"] = "Author added successfully.";
+
+                        return RedirectToAction("Index");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error during login process. {ex.Message}");
+                //Add logging here
             }
 
             TempData["Error"] = "Author not added.";
 
             return View(author);
+
         }
 
         [HttpGet]

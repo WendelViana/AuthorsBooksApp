@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Configuration;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,28 +13,57 @@ namespace AuthorsBooksApp.Services
 
         public ApiClientService()
         {
-            _httpClient = new HttpClient();
-            // _httpClient.BaseAddress = new Uri("https://devtestapi.debtstream.co.uk/");//TODO: I'm using localhost for testing, because the devtestapi is not working. (timeout error)
-            _httpClient.BaseAddress = new Uri("https://localhost:7152/"); 
-            _httpClient.DefaultRequestHeaders.Add("Api-Key", "1234567890"); //TODO: Move to config
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true //ignoring ssl errors dev environment.
+            };
+
+            _httpClient = new HttpClient(handler);
+
+            var baseUrl = ConfigurationManager.AppSettings["ApiBaseUrl"];
+            var apiKey = ConfigurationManager.AppSettings["ApiKey"];
+
+            if (string.IsNullOrWhiteSpace(baseUrl))
+                throw new InvalidOperationException("ApiBaseUrl is not configured in web.config.");
+            if (string.IsNullOrWhiteSpace(apiKey))
+                throw new InvalidOperationException("ApiKey is not configured in web.config.");
+
+            _httpClient.BaseAddress = new Uri(baseUrl);
+            _httpClient.DefaultRequestHeaders.Add("API-Key", apiKey);
         }
 
         public async Task<T> GetAsync<T>(string endpoint)
         {
             var response = await _httpClient.GetAsync(endpoint);
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<T>(content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<T>(content);
+            }
+
+            return default;
         }
 
         public async Task<T> PostAsync<T>(string endpoint, object data)
         {
-            var json = JsonConvert.SerializeObject(data);
+            var settings = new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                DefaultValueHandling = DefaultValueHandling.Ignore
+            };
+
+            var json = JsonConvert.SerializeObject(data, settings);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await _httpClient.PostAsync(endpoint, content);
-            response.EnsureSuccessStatusCode();
-            var result = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<T>(result);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<T>(result);
+            }
+                
+            return default;
         }
     }
 }

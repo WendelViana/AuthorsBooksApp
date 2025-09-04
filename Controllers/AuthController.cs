@@ -1,6 +1,5 @@
 ﻿using AuthorsBooksApp.Helpers;
 using AuthorsBooksApp.Models;
-using AuthorsBooksApp.Services;
 using AuthorsBooksApp.Services.Interfaces;
 using System;
 using System.Threading.Tasks;
@@ -34,7 +33,7 @@ namespace AuthorsBooksApp.Controllers
                     return RedirectToAction("Index", "Home");
                 }
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine($"Error during login process. {ex.Message}");
                 //Add logging here
@@ -51,12 +50,22 @@ namespace AuthorsBooksApp.Controllers
         [HttpPost]
         public async Task<ActionResult> Register(User user)
         {
-            var registered = await _authService.RegisterUser(user);
-
-            if (registered != null)
+            try
             {
-                return RedirectToAction("RegisterConfirmation");
-            }   
+                var registered = await _authService.RegisterUser(user);
+
+                if (registered != null)
+                {
+                    return RedirectToAction("RegisterConfirmation");
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+               //Add logging here
+                Console.WriteLine($"Error during registration process. {ex.Message}");
+            }
 
             ViewBag.Error = "Registration failed.";
             return View();

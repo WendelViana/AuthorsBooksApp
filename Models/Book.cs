@@ -23,6 +23,6 @@ namespace AuthorsBooksApp.Models
         public string Language { get; set; }
 
         [JsonProperty("price")]
-        public double Price { get; set; }
+        public double? Price { get; set; }
     }
 }

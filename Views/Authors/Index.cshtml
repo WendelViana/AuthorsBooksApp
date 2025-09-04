@@ -37,6 +37,11 @@
         </div>
     </nav>
 
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">@ViewBag.Error</div>
+    }
+
     @if (TempData["Message"] != null)
     {
         <div class="alert alert-info" role="alert">
